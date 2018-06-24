@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity() {
-    private var auth: FirebaseAuth? = null
+    lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +26,10 @@ class MainActivity : AppCompatActivity() {
 
     // handle button activities
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
 
         if (id == R.id.logoutbutton) {
-            auth?.signOut()
+            auth.signOut()
             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             finish()
         }

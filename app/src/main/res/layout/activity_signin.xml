@@ -10,7 +10,7 @@
     tools:layout_editor_absoluteY="25dp">
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressBar_signin"
         android:layout_width="55dp"
         android:layout_height="45dp"
         android:layout_gravity="center|bottom"
@@ -31,7 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar">
+        app:layout_constraintTop_toBottomOf="@+id/progressBar_signin">
 
 
         <ImageView
@@ -50,7 +50,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/email_signin"
                 android:layout_width="205dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -73,7 +73,7 @@
 
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/password_signin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -94,7 +94,7 @@
             android:textColor="@android:color/black" />
 
         <Button
-            android:id="@+id/btn_reset_password"
+            android:id="@+id/btn_reset_password_signin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
