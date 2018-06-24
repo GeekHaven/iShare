@@ -45,7 +45,8 @@ class ResetPasswordActivity : AppCompatActivity() {
             }
 
             progressBar!!.visibility = View.VISIBLE
-            auth!!.sendPasswordResetEmail(email)
+            val emailCorrected= "$email@iiita.ac.in"
+            auth!!.sendPasswordResetEmail(emailCorrected)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(this@ResetPasswordActivity, "We have sent you instructions to reset your password!", Toast.LENGTH_SHORT).show()

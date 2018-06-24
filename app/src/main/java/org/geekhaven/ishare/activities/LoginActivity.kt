@@ -74,9 +74,9 @@ class LoginActivity : AppCompatActivity() {
             }
 
             progressBar!!.visibility = View.VISIBLE
-
+            val emailCorrected= "$email@iiita.ac.in"
             //authenticate user
-            auth!!.signInWithEmailAndPassword(email, password)
+            auth!!.signInWithEmailAndPassword(emailCorrected, password)
                     .addOnCompleteListener(this@LoginActivity) { task ->
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the

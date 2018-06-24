@@ -16,6 +16,12 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 
 import org.geekhaven.ishare.R
+import android.support.annotation.NonNull
+import android.support.v4.app.FragmentActivity
+import android.util.Log
+import com.google.firebase.auth.FirebaseUser
+import timber.log.Timber.tag
+
 
 class SignupActivity : AppCompatActivity() {
 
@@ -66,7 +72,8 @@ class SignupActivity : AppCompatActivity() {
 
             progressBar!!.visibility = View.VISIBLE
             //create user
-            auth!!.createUserWithEmailAndPassword(email, password)
+            val emailCorrected= "$email@iiita.ac.in"
+            auth!!.createUserWithEmailAndPassword(emailCorrected, password)
                     .addOnCompleteListener(this@SignupActivity) { task ->
                         Toast.makeText(this@SignupActivity, "createUserWithEmail:onComplete:" + task.isSuccessful, Toast.LENGTH_SHORT).show()
                         progressBar!!.visibility = View.GONE
@@ -81,6 +88,7 @@ class SignupActivity : AppCompatActivity() {
                             finish()
                         }
                     }
+
         })
     }
 
@@ -89,3 +97,4 @@ class SignupActivity : AppCompatActivity() {
         progressBar!!.visibility = View.GONE
     }
 }
+

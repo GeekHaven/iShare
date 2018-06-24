@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "1095674755677",
-    "firebase_url": "https://ishare-812c4.firebaseio.com",
-    "project_id": "ishare-812c4",
-    "storage_bucket": "ishare-812c4.appspot.com"
+    "project_number": "151243322878",
+    "firebase_url": "https://ishare-adef7.firebaseio.com",
+    "project_id": "ishare-adef7",
+    "storage_bucket": "ishare-adef7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1095674755677:android:cc050ac5a76f7b46",
+        "mobilesdk_app_id": "1:151243322878:android:cc050ac5a76f7b46",
         "android_client_info": {
           "package_name": "org.geekhaven.ishare"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1095674755677-e6ju0db3atieig14gaugg3942eo8cda7.apps.googleusercontent.com",
+          "client_id": "151243322878-2udgq6iptl108jjfvfmcqa5uagj21nn3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCtmTh_go3MjD6dIAZI6XkvHBZlpqKtBw4"
+          "current_key": "AIzaSyBKkhlbU1PmeYUJmNhcJCH0T0NpnjWey0I"
         }
       ],
       "services": {
