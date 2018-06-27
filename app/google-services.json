@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "151243322878",
+    "firebase_url": "https://ishare-adef7.firebaseio.com",
+    "project_id": "ishare-adef7",
+    "storage_bucket": "ishare-adef7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151243322878:android:cc050ac5a76f7b46",
+        "android_client_info": {
+          "package_name": "org.geekhaven.ishare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "151243322878-2udgq6iptl108jjfvfmcqa5uagj21nn3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKkhlbU1PmeYUJmNhcJCH0T0NpnjWey0I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
