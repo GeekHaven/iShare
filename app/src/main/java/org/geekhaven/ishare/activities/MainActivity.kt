@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "Fill the Details Before Submitting", Toast.LENGTH_LONG).show()
             return
         }
-        val information = UserInfo(nameEntered, addressEntered, location!!)
+        var information = UserInfo(nameEntered, addressEntered, location!!)
         information.setmLocation(locationRecieved)
         user = FirebaseAuth.getInstance().currentUser
         databaseReference.child(user!!.uid).setValue(information)
