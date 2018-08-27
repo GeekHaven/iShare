@@ -14,15 +14,12 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.karumi.dexter.BuildConfig
 import com.karumi.dexter.Dexter
@@ -31,93 +28,83 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import kotlinx.android.synthetic.main.activity_main.*
 import org.geekhaven.ishare.R
 import org.geekhaven.ishare.UserInfo
-import org.geekhaven.ishare.activities.LoginActivity
 import org.geekhaven.ishare.userDataAdapter
 import java.text.DateFormat
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-    internal lateinit var mFirebaseAuth: FirebaseAuth
-    internal lateinit var databaseReference: DatabaseReference
-    private var user: FirebaseUser? = null
-    internal var userDataList = ArrayList<UserInfo>()
-    internal lateinit var mListView: ListView
+    private lateinit var mFirebaseAuth: FirebaseAuth
+    private lateinit var databaseReference: DatabaseReference
+    private var userDataList = ArrayList<UserInfo>()
 
-
-    // location last updated time
-    private var mLastUpdateTime: String? = null
-
-    internal var location: String? = null
-    internal var timeUpdate: String? = null
+    private lateinit var location: String
     // bunch of location related apis
-    private var mFusedLocationClient: FusedLocationProviderClient? = null
-    private var mSettingsClient: SettingsClient? = null
-    private var mLocationRequest: LocationRequest? = null
-    private var mLocationSettingsRequest: LocationSettingsRequest? = null
-    private var mLocationCallback: LocationCallback? = null
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var mSettingsClient: SettingsClient
+    private lateinit var mLocationRequest: LocationRequest
+    private lateinit var mLocationSettingsRequest: LocationSettingsRequest
+    private lateinit var mLocationCallback: LocationCallback
     private var mCurrentLocation: Location? = null
-    // boolean flag to toggle the ui
-    private var mRequestingLocationUpdates: Boolean? = null
+    private var mLastUpdateTime:String = ""
 
-    internal lateinit var nameEntered: String
-    internal lateinit var addressEntered: String
-    internal lateinit var locationRecieved: String
-    internal var flag = 1
+
+    private var mRequestingLocationUpdates: Boolean = false
+
+    private lateinit var nameEntered: String
+    private lateinit var addressEntered: String
+    private lateinit var locationRecieved: String
+    private var flag = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-        val tv = findViewById<View>(R.id.HelloTv) as TextView
         mFirebaseAuth = FirebaseAuth.getInstance()
-        //if user is not logged in then take it to login page;
+
         if (mFirebaseAuth.currentUser == null) {
             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             finish()
         }
+
         mFirebaseAuth = FirebaseAuth.getInstance()
-        user = FirebaseAuth.getInstance().currentUser
-        //it sets email id of logged in user on top of the screen
-        tv.text = "Hello User-ID :- " + user!!.email!!
-        user = FirebaseAuth.getInstance().currentUser
+        val user = FirebaseAuth.getInstance().currentUser!!
+
+        HelloTv.text = "Hello User-ID :- " + user.email
         //creates a heading in database with name user in which data will be stored
         databaseReference = FirebaseDatabase.getInstance().getReference("Users")
 
-        val name = findViewById<View>(R.id.Name) as EditText
-        val address = findViewById<View>(R.id.Address) as EditText
-        val submit = findViewById<View>(R.id.SubmitButton) as Button
-        val logoutButton = findViewById<View>(R.id.LogoutButton) as Button
 
         // initialize the necessary libraries
         init()
 
         // restore the values from saved instance state
         restoreValuesFromBundle(savedInstanceState)
+
         //submit button when clicked adds info to firebase database and shows in a listview
-        submit.setOnClickListener(View.OnClickListener {
+        SubmitButton.setOnClickListener(View.OnClickListener {
             //getLocation
             flag = 1
-            nameEntered = name.text.toString().trim { it <= ' ' }
-            addressEntered = address.text.toString().trim { it <= ' ' }
+            nameEntered = Name.text.toString().trim { it <= ' ' }
+            addressEntered = Address.text.toString().trim { it <= ' ' }
             if (TextUtils.isEmpty(nameEntered) || TextUtils.isEmpty(addressEntered)) {
                 Toast.makeText(this@MainActivity, "Fill the Details Before Submitting", Toast.LENGTH_LONG).show()
                 return@OnClickListener
             }
+
             //starts fetching location and updating in database and the UI every 10 seconds of interval
             startLocationFetch()
 
             //adds information to database
-            addInfo(name, address)
+            addInfo(Name, Address)
 
             flag = 0
         })
 
-
-
-        logoutButton.setOnClickListener {
+        LogoutButton.setOnClickListener {
             //stop getting location
             stopLocation()
             mFirebaseAuth.signOut()
@@ -129,14 +116,15 @@ class MainActivity : AppCompatActivity() {
     private fun addInfo(name: EditText, address: EditText) {
         nameEntered = name.text.toString().trim { it <= ' ' }
         addressEntered = address.text.toString().trim { it <= ' ' }
+
         if (TextUtils.isEmpty(nameEntered) || TextUtils.isEmpty(addressEntered)) {
             Toast.makeText(this@MainActivity, "Fill the Details Before Submitting", Toast.LENGTH_LONG).show()
             return
         }
-        var information = UserInfo(nameEntered, addressEntered, location!!)
-        information.setmLocation(locationRecieved)
-        user = FirebaseAuth.getInstance().currentUser
+        var information = UserInfo(nameEntered, addressEntered, locationRecieved)
+        val user = FirebaseAuth.getInstance().currentUser
         databaseReference.child(user!!.uid).setValue(information)
+
         Toast.makeText(this@MainActivity, "Information Saved ", Toast.LENGTH_SHORT).show()
     }
 
@@ -151,16 +139,15 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (ds in dataSnapshot.children) {
 
-                    val name = ds.getValue<UserInfo>(UserInfo::class.java!!)
-                    Log.d("TAG", name!!.getmAddress())
+                    val name = ds.getValue<UserInfo>(UserInfo::class.java)
+                    Log.d("TAG", name!!.mAddress)
                     userDataList.add(name)
                 }
                 progressBar.visibility = View.GONE
 
                 val userDataSet = userDataAdapter(this@MainActivity, userDataList)
 
-                mListView = findViewById<View>(R.id.ListView) as ListView
-                mListView.adapter = userDataSet
+                ListView.adapter = userDataSet
 
             }
 
@@ -171,8 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDatabaseLocation() {
         val information = UserInfo(nameEntered, addressEntered, locationRecieved)
-        information.setmLocation(locationRecieved)
-        user = FirebaseAuth.getInstance().currentUser
+        val user = FirebaseAuth.getInstance().currentUser
         databaseReference.child(user!!.uid).setValue(information)
 
         showInfo()
@@ -185,10 +171,10 @@ class MainActivity : AppCompatActivity() {
         mSettingsClient = LocationServices.getSettingsClient(this)
 
         mLocationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
+            override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 // location is received
-                mCurrentLocation = locationResult!!.lastLocation
+                mCurrentLocation = locationResult.lastLocation
                 mLastUpdateTime = DateFormat.getTimeInstance().format(Date())
 
                 updateLocationUI()
@@ -198,12 +184,12 @@ class MainActivity : AppCompatActivity() {
         mRequestingLocationUpdates = false
 
         mLocationRequest = LocationRequest()
-        mLocationRequest!!.interval = UPDATE_INTERVAL_IN_MILLISECONDS
-        mLocationRequest!!.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
-        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
+        builder.addLocationRequest(mLocationRequest)
         mLocationSettingsRequest = builder.build()
     }
 
@@ -218,15 +204,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (savedInstanceState.containsKey("last_known_location")) {
-                mCurrentLocation = savedInstanceState.getParcelable("last_known_location")
-            }
 
-            if (savedInstanceState.containsKey("last_updated_on")) {
-                mLastUpdateTime = savedInstanceState.getString("last_updated_on")
+                mCurrentLocation = savedInstanceState.getParcelable("last_known_location")
+
+                if (savedInstanceState.containsKey("last_updated_on")) {
+                    mLastUpdateTime = savedInstanceState.getString("last_updated_on")
+
+                    updateLocationUI()
+                }
+
             }
         }
 
-        updateLocationUI()
     }
 
     /**
@@ -234,18 +223,18 @@ class MainActivity : AppCompatActivity() {
      * and toggling the buttons
      */
     private fun updateLocationUI() {
-        if (mCurrentLocation != null) {
+        if (mCurrentLocation!=null) {
             location = "Lat: " + mCurrentLocation!!.latitude + ", " +
                     "Lng: " + mCurrentLocation!!.longitude
-            locationRecieved = location as String
+            locationRecieved = location
             if (flag == 0)
                 updateDatabaseLocation()
 
             //  location last updated time
-            timeUpdate = "Last updated on: " + mLastUpdateTime!!
-
+            val timeUpdate = "Last updated on: " + mLastUpdateTime
+        } else {
+            locationRecieved = "Lat: 25.4271408, Lng: 81.7713946"
         }
-
     }
 
     fun startLocationFetch() {
@@ -275,7 +264,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        mSettingsClient!!
+        mSettingsClient
                 .checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(this) {
                     Log.i(TAG, "All location settings are satisfied.")
@@ -283,8 +272,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Started location updates!", Toast.LENGTH_SHORT).show()
 
 
-                    mFusedLocationClient!!.requestLocationUpdates(mLocationRequest,
-                            mLocationCallback!!, Looper.myLooper())
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                            mLocationCallback, Looper.myLooper())
 
                     updateLocationUI()
                 }
@@ -335,7 +324,7 @@ class MainActivity : AppCompatActivity() {
 
         // Resuming location updates depending on button state and
         // allowed permissions
-        if (mRequestingLocationUpdates!! && checkPermissions()) {
+        if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates()
         }
 
@@ -349,10 +338,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     override fun onPause() {
         super.onPause()
 
-        if (mRequestingLocationUpdates!!) {
+        if (mRequestingLocationUpdates) {
             // pausing location updates
             stopLocationUpdates()
         }
@@ -370,14 +360,14 @@ class MainActivity : AppCompatActivity() {
 
     fun stopLocationUpdates() {
         // Removing location updates
-        mFusedLocationClient!!
-                .removeLocationUpdates(mLocationCallback!!)
+        mFusedLocationClient
+                .removeLocationUpdates(mLocationCallback)
                 .addOnCompleteListener(this) { Toast.makeText(applicationContext, "Location updates stopped!", Toast.LENGTH_SHORT).show() }
     }
 
     companion object {
 
-        private val TAG = MainActivity::class.java!!.getSimpleName()
+        private val TAG = MainActivity::class.java.getSimpleName()
 
         // location updates interval - 10sec
         private val UPDATE_INTERVAL_IN_MILLISECONDS: Long = 10000

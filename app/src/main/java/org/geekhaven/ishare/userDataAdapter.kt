@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import kotlinx.android.synthetic.main.listview_customlayout.view.*
 import java.util.ArrayList
 
 /**
@@ -25,14 +26,11 @@ class userDataAdapter(context: Context, objects: ArrayList<UserInfo>) : ArrayAda
 
         val listItemView = LayoutInflater.from(context).inflate(
                 R.layout.listview_customlayout, null, true)
-        val nameList = listItemView.findViewById<View>(R.id.nameListTV) as TextView
-        val AddressList = listItemView.findViewById<View>(R.id.AdressListTV) as TextView
-        val locationList = listItemView.findViewById<View>(R.id.LocationListTV) as TextView
         val userData = userdata[position]
-        nameList.text = userData.getmName()
-        AddressList.text = userData.getmAddress()
-        val s = userData.getmLocation()
-        locationList.text = userData.getmLocation()
+        listItemView.nameListTV.text = userData.mName
+        listItemView.AdressListTV.text = userData.mAddress
+        val s = userData.mLocation
+        listItemView.LocationListTV.text = userData.mLocation
         return listItemView
     }
 }
